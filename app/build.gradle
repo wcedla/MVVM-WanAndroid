@@ -1,0 +1,93 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
+
+android {
+    compileSdkVersion BuildVersions.COMPILE_SDK
+    buildToolsVersion BuildVersions.BUILD_TOOLS
+
+    defaultConfig {
+        applicationId "com.istrong.wcedla.wanandroid"
+        minSdkVersion BuildVersions.MIN_SDK
+        targetSdkVersion BuildVersions.TARGET_SDK
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    kapt {
+        arguments {
+            arg("AROUTER_MODULE_NAME", project.getName())
+            arg("AROUTER_GENERATE_DOC", "enable")
+            arg("room.schemaLocation", "$projectDir/schemas".toString())
+            arg("room.incremental", "true")
+            arg("room.expandProjection", "true")
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == "androidx.constraintlayout") {
+                if (requested.name.equals("constraintlayout")) {
+                    details.useVersion "2.1.0-beta02"
+                }
+            }else if (requested.group == "androidx.appcompat") {
+                if (requested.name.equals("appcompat")) {
+                    details.useVersion DepVersions.APPCOMPAT
+                }
+            }else if (requested.group == "androidx.activity") {
+                if (requested.name.equals("activity")) {
+                    details.useVersion DepVersions.ACTIVITY
+                }
+            }else if (requested.group == "org.jetbrains.kotlinx") {
+                if (requested.name.equals("kotlinx-coroutines-android")) {
+                    details.useVersion DepVersions.ANDROID_COROUTINES
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation DepConstant.KOTLIN_STDLIB
+    implementation DepConstant.CORE_KTX
+    implementation DepConstant.APPCOMPAT
+    implementation DepConstant.MATERIAL
+    implementation DepConstant.ACTIVITY_KTX
+    implementation DepConstant.FRAGMENT_KTX
+    implementation DepConstant.ANDROID_COROUTINES
+    implementation DepConstant.LIFECYCLE_JAVA8
+    implementation DepConstant.LIFECYCLE_RUNTIME_KTX
+    implementation DepConstant.LIVEDATA_CORE_KTX
+    implementation DepConstant.LIVEDATA_KTX
+    implementation DepConstant.VIEWMODEL_KTX
+    implementation(DepConstant.AROUTER_API){
+        exclude group: "androidx.appcompat"
+    }
+    implementation project(path: ':base')
+    kapt DepConstant.AROUTER_COMPILER
+}

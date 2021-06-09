@@ -1,0 +1,115 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
+
+android {
+    compileSdkVersion BuildVersions.COMPILE_SDK
+    buildToolsVersion BuildVersions.BUILD_TOOLS
+
+    defaultConfig {
+        minSdkVersion BuildVersions.MIN_SDK
+        targetSdkVersion BuildVersions.TARGET_SDK
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    kapt {
+        arguments {
+            arg("AROUTER_MODULE_NAME", project.getName())
+            arg("AROUTER_GENERATE_DOC", "enable")
+            arg("room.schemaLocation", "$projectDir/schemas".toString())
+            arg("room.incremental", "true")
+            arg("room.expandProjection", "true")
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == "androidx.constraintlayout") {
+                if (requested.name.equals("constraintlayout")) {
+                    details.useVersion "2.1.0-beta02"
+                }
+            } else if (requested.group == "androidx.appcompat") {
+                if (requested.name.equals("appcompat")) {
+                    details.useVersion DepVersions.APPCOMPAT
+                }
+            } else if (requested.group == "androidx.activity") {
+                if (requested.name.equals("activity")) {
+                    details.useVersion DepVersions.ACTIVITY
+                }
+            } else if (requested.group == "androidx.fragment") {
+                if (requested.name.equals("fragment")) {
+                    details.useVersion DepVersions.FRAGMENT
+                }
+            }else if (requested.group == "org.jetbrains.kotlinx") {
+                if (requested.name.equals("kotlinx-coroutines-android")) {
+                    details.useVersion DepVersions.ANDROID_COROUTINES
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly DepConstant.KOTLIN_STDLIB
+    compileOnly DepConstant.CORE_KTX
+    compileOnly DepConstant.APPCOMPAT
+    compileOnly DepConstant.MATERIAL
+    compileOnly DepConstant.ACTIVITY_KTX
+    compileOnly DepConstant.FRAGMENT_KTX
+    compileOnly DepConstant.ANDROID_COROUTINES
+    compileOnly DepConstant.LIFECYCLE_JAVA8
+    compileOnly DepConstant.LIFECYCLE_RUNTIME_KTX
+    compileOnly DepConstant.LIVEDATA_CORE_KTX
+    compileOnly DepConstant.LIVEDATA_KTX
+    compileOnly DepConstant.VIEWMODEL_KTX
+    implementation DepConstant.RETROFIT
+    implementation DepConstant.OKHTTP
+    implementation DepConstant.LOGGER_INTERCEPTOR
+    implementation DepConstant.CONVERT_GSON
+    implementation DepConstant.GSON
+    implementation DepConstant.ROOM_KTX
+    implementation(DepConstant.AROUTER_API) {
+        exclude group: "androidx.appcompat"
+    }
+    implementation(DepConstant.PERMISSIONX)
+    implementation(DepConstant.HAWK) {
+        exclude group: "androidx.appcompat"
+    }
+    implementation(DepConstant.LOGGER) {
+        exclude group: "androidx.appcompat"
+    }
+    implementation(DepConstant.TRUE_TIME) {
+        exclude group: "androidx.appcompat"
+    }
+    implementation(DepConstant.SPIDER_MAN) {
+        exclude group: "androidx.appcompat"
+    }
+    kapt DepConstant.AROUTER_COMPILER
+    kapt DepConstant.ROOM_COMPILER
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.5.10"
+}

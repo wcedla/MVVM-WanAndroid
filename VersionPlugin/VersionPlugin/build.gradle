@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.0'
+    id 'java-gradle-plugin'
+    id 'maven'
+}
+apply from:'upload.gradle'
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.0"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+gradlePlugin {
+    plugins {
+        version {
+            // 在 app 模块需要通过 id 引用这个插件
+            id = 'com.istrong.gradle.versionplugin'
+            // 实现这个插件的类的路径
+            implementationClass = 'VersionPlugin'
+        }
+    }
+}
+
+//group = 'com.istrong.gradle.plugin'
+//version = '1.0.0-snapshot'
+//
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            //提交到远程服务器：
+//            repository(url: "http://114.215.182.48:7777/nexus/content/repositories/StrongAndroid") {
+//                authentication(userName: "deployment", password: "deployment123")
+//            }
+//            //本地的Maven地址设置为D:/repos
+////            repository(url: uri("${rootDir}/repos"))
+//            pom.artifactId = "VersionPlugin"
+//        }
+//    }
+//}

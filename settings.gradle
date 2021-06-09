@@ -1,0 +1,4 @@
+rootProject.name = "WanAndroid"
+include ':app'
+include ':base'
+includeBuild("./VersionPlugin/VersionPlugin")
